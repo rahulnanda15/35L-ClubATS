@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import CandidateList from './pages/CandidateList';
 
 export default function App() {
   const [messages, setMessages] = useState([])
@@ -23,14 +24,24 @@ export default function App() {
   }
 
   return (
-    <div>
+    <div style={{ padding: '2rem' }}>
+      <h1>Club Application Tracker</h1>
+
+      {/* Original minimal form */}
       <form onSubmit={submit}>
         <input value={input} onChange={e => setInput(e.target.value)} />
         <button type="submit">Send</button>
       </form>
+
       <ul>
         {messages.map(m => <li key={m.id}>{m.text}</li>)}
       </ul>
+
+      {/* Add a line break and new section */}
+      <hr style={{ margin: '2rem 0' }} />
+
+      <h2>Candidate List</h2>
+      <CandidateList />
     </div>
-  )
+  );
 }
