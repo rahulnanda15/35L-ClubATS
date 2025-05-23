@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import CandidateList from './pages/CandidateList';
 import Login from './pages/Login';
+import ApplicationCycleManager from './pages/ApplicationCycleManager'; 
 
 export default function App() {
   const [messages, setMessages] = useState([])
@@ -38,6 +39,9 @@ export default function App() {
         <button onClick={() => navigate('/candidate-list')}>
           Go to Candidate List
         </button>
+        <button onClick={() => navigate('/application-cycles')}> 
+          Go to Application Cycles
+        </button>
       </div>
 
       <Routes>
@@ -50,7 +54,6 @@ export default function App() {
           path="/candidate-list"
           element={
             <>
-              {/* Original minimal form */}
               <form onSubmit={submit}>
                 <input value={input} onChange={e => setInput(e.target.value)} />
                 <button type="submit">Send</button>
@@ -60,7 +63,6 @@ export default function App() {
                 {messages.map(m => <li key={m.id}>{m.text}</li>)}
               </ul>
 
-              {/* Add a line break and new section */}
               <hr style={{ margin: '2rem 0' }} />
 
               <h2>Candidate List</h2>
@@ -68,6 +70,10 @@ export default function App() {
             </>
           }>
         </Route>
+        <Route
+          path="/application-cycles"
+          element={<ApplicationCycleManager />}
+        />
       </Routes>
     </div>
   );
