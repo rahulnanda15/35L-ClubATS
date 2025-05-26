@@ -116,21 +116,28 @@ const RightSection = styled(Box)(() => ({
 }))
 
 
-const Login = () => {
+const SignUp = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [fullName, setFullName] = useState('');
+    const [graduationClass, setGraduationClass] = useState('');
+    const [major, setMajor] = useState('');
+
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleSignUp = (e) => {
         e.preventDefault();
 
         // Basic success message; implement actual logic later
-        alert(`Successfully logged in as ${username}`);
+        alert(`Successfully signed up as ${fullName}`);
 
         // Make sure to reset both fields after the user submits their login information
         setUsername('');
         setPassword('');
+        setFullName('');
+        setGraduationClass('');
+        setMajor('');
     };
 
     return (
@@ -162,7 +169,7 @@ const Login = () => {
                                 maxWidth: '400px'
                             }}
                         >
-                            Welcome back
+                            Join us! Create your account to track club applications.
                         </Typography>
                     </LeftSection>
                 </Box>
@@ -187,10 +194,49 @@ const Login = () => {
                                     color: 'primary.main'
                                 }}
                             >
-                                Sign in
+                                Sign up
                             </Typography>
 
-                            <Box component="form" onSubmit={handleLogin} sx={{ width: '100%' }}>
+                            <Box component="form" onSubmit={handleSignUp} sx={{ width: '100%' }}>
+                                <TextField
+                                    fullWidth
+                                    label="Full Name"
+                                    variant="outlined"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    required
+                                    sx={{ mb: 3 }}
+                                    InputProps={{
+                                        sx: { backgroundColor: 'rgba(0, 0, 0, 0.02)' }
+                                    }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Graduation Class"
+                                    variant="outlined"
+                                    value={graduationClass}
+                                    onChange={(e) => setGraduationClass(e.target.value)}
+                                    required
+                                    sx={{ mb: 3 }}
+                                    InputProps={{
+                                        sx: { backgroundColor: 'rgba(0, 0, 0, 0.02)' }
+                                    }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Field of Study"
+                                    variant="outlined"
+                                    value={major}
+                                    onChange={(e) => setMajor(e.target.value)}
+                                    required
+                                    sx={{ mb: 3 }}
+                                    InputProps={{
+                                        sx: { backgroundColor: 'rgba(0, 0, 0, 0.02)' }
+                                    }}
+                                />
+
                                 <TextField
                                     fullWidth
                                     label="Username"
@@ -232,15 +278,15 @@ const Login = () => {
                                         },
                                     }}
                                 >
-                                    Sign In
+                                    Sign Up
                                 </Button>
 
                                 <Box sx={{ textAlign: 'center' }}>
                                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                        Don't have an account?{' '}
+                                        Already have an account?{' '}
                                         <Typography
                                             component="span"
-                                            onClick={() => navigate('/signup')}
+                                            onClick={() => navigate('/login')}
                                             sx={{
                                                 color: 'primary.main',
                                                 cursor: 'pointer',
@@ -250,7 +296,7 @@ const Login = () => {
                                                 }
                                             }}
                                         >
-                                            Sign up here
+                                            Sign in here
                                         </Typography>
                                     </Typography>
                                 </Box>
@@ -263,4 +309,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default SignUp;
