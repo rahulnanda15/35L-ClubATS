@@ -4,6 +4,7 @@ import CandidateList from './pages/CandidateList';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
+import ApplicationCycleManager from './pages/ApplicationCycleManager';
 
 export default function App() {
   return (
@@ -25,6 +26,11 @@ export default function App() {
         path="/candidate-list"
         element={<CandidateList />}>
       </Route>
+
+      <Route
+        path="/application-cycles"
+        element={<ApplicationCycleManager />}
+      />
     </Routes>
   );
 }
