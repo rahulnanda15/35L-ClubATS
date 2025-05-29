@@ -198,6 +198,7 @@ export default function LandingPage() {
                             <Button
                                 variant="outlined"
                                 size="large"
+                                onClick={() => navigate('/signup')}
                                 sx={{
                                     borderColor: 'white',
                                     color: 'white',

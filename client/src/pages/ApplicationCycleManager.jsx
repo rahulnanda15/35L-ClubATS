@@ -15,7 +15,7 @@ function ApplicationCycleManager() {
       name: newCycleName,
       active: false,
     };
-    setCycles([...cycles, newCycle]);
+    setCycles([...cycles, newCycle]); 
     setNewCycleName('');
   };
 
