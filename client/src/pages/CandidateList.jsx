@@ -54,7 +54,6 @@ export default function CandidateList() {
       {messages.length > 0 && (
         <ul style={{
           listStyle: 'none',
-          padding: 0,
           marginBottom: '2rem',
           maxHeight: '200px',
           overflowY: 'auto',
