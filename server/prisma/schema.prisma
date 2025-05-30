@@ -9,6 +9,30 @@ datasource db {
 }
 
 model TestMessage {
-  id   Int    @id @default(autoincrement())
+  id   String @id @default(uuid())
   text String
+}
+
+model Applicant {
+  id              String   @id @default(uuid())
+  
+  // Applicant info
+  email           String   @unique
+  
+  // Application data
+  status          ApplicationStatus @default(SUBMITTED)
+  responseID      String
+  responses       Json     // Store all form responses as JSON
+  
+  // Timestamps
+  submittedAt     DateTime @default(now())
+  
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WAITLISTED
 }
