@@ -1,15 +1,15 @@
 import { PrismaClient } from '@prisma/client'
-import { listResponses } from './formsClient.js'
+import { getResponses } from './formsClient.js'
 
 const prisma = new PrismaClient()
 
-export async function syncFormResponses() {
+export async function syncFormResponses(formsClient) {
   try {
-    const responses = await listResponses()
+    const responses = await getResponses(formsClient)
     
     // Get existing response IDs directly
     const existingResponseIds = new Set(
-      (await prisma.applicant.findMany({
+      (await prisma.application.findMany({
         select: { responseID: true }
       })).map(r => r.responseID)
     )
@@ -18,18 +18,15 @@ export async function syncFormResponses() {
     const newResponses = responses.filter(response => !existingResponseIds.has(response.responseId))
     
     for (const response of newResponses) {
-      const email = response.respondentEmail;
-      
-      await prisma.applicant.create({
+      await prisma.application.create({
         data: {
-          email,
           responseID: response.responseId,
           submittedAt: response.createTime,
           responses: response.answers,
         }
       })
       
-      console.log(`Stored new response for ${email}`)
+      console.log(`Stored new form response`)
     }
     
     console.log(`Synced ${newResponses.length} new form responses`)

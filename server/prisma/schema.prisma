@@ -8,25 +8,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model TestMessage {
-  id   String @id @default(uuid())
-  text String
-}
-
-model Applicant {
+model Application {
   id              String   @id @default(uuid())
-  
-  // Applicant info
-  email           String   @unique
-  
-  // Application data
-  status          ApplicationStatus @default(SUBMITTED)
   responseID      String
-  responses       Json     // Store all form responses as JSON
-  
-  // Timestamps
   submittedAt     DateTime @default(now())
-  
+  status          ApplicationStatus @default(SUBMITTED)
+  responses       Json     // Store all form responses as JSON 
+
+
 }
 
 enum ApplicationStatus {
