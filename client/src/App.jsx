@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import AdminDashboard from './pages/AdminDashboard';
 import CandidateList from './pages/CandidateList';
+import CandidateDetail from './pages/CandidateDetail';
+import UserDashboard from './pages/UserDashboard';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
@@ -14,6 +17,10 @@ export default function App() {
         path="/"
         element={<LandingPage />}>
       </Route>
+      {/*<Route
+        path="/admin"
+        element={<AdminDashboard />}>
+      </Route> */}
       <Route
         path="/signup"
         element={<SignUp />}>
@@ -26,6 +33,16 @@ export default function App() {
       <Route
         path="/candidate-list"
         element={<CandidateList />}>
+      </Route>
+
+      {/*<Route 
+        path="/candidates/:id" 
+        element={<CandidateDetail />}>
+      </Route>*/}
+
+      <Route
+        path="/dashboard"
+        element={<UserDashboard />}>
       </Route>
 
       <Route
