@@ -1,4 +1,4 @@
-import { getDatabaseMappings } from './configManager.js';
+import config from '../config.js';
 
 // Transform a Google Form response into a structured database record
 export function transformFormResponse(formResponse) {
@@ -8,11 +8,9 @@ export function transformFormResponse(formResponse) {
     rawResponses: formResponse.answers // Keep raw data as backup
   };
 
-  const mappings = getDatabaseMappings();
-
   // Transform each answer using the field mappings
   for (const [questionId, answerData] of Object.entries(formResponse.answers || {})) {
-    const mapping = mappings[questionId];
+    const mapping = config.form.database_mappings[questionId];
     
     if (!mapping) {
       console.warn(`No mapping found for question ID: ${questionId}`);

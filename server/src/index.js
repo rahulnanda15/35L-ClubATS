@@ -1,35 +1,26 @@
-import express from 'express'
-import cron from 'node-cron'
+import express from 'express';
+import cron from 'node-cron';
 
-import { getFormsClient } from './services/formsService.js'
-import { syncFormResponses } from './services/syncService.js'
-import applicationsRoutes from './routes/applications.js'
-import filesRoutes from './routes/files.js'
+import { syncFormResponses } from './services/syncResponses.js';
 
-const app = express()
-const PORT = 3001
+import applicationsRoutes from './routes/applications.js';
+import filesRoutes from './routes/files.js';
 
-app.use(express.json())
-app.use(express.static('../client/dist'))
+import config from './config.js';
 
-// Routes
-app.use('/api/applications', applicationsRoutes)
-app.use('/api/files', filesRoutes)
+const app = express();
 
-// Initialize Forms client and start sync
-let formsClient;
-getFormsClient().then(client => {
-  formsClient = client;
-  
-  syncFormResponses(formsClient);
-  
-  // Schedule sync every minute
-  cron.schedule('*/5 * * * *', () => {
-    console.log('Running scheduled response sync...');
-    syncFormResponses(formsClient);
-  });
+app.use(express.json());
+
+app.use('/api/applications', applicationsRoutes);
+app.use('/api/files', filesRoutes);
+
+await syncFormResponses();
+cron.schedule('*/5 * * * *', () => {
+  console.log('Running scheduled response sync...');
+  syncFormResponses();
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+app.listen(config.port, () => {
+  console.log(`Server running on port ${config.port}`);
+});

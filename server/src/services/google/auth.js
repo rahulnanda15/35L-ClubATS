@@ -1,12 +1,7 @@
-import path from 'node:path';
 import { GoogleAuth } from 'google-auth-library';
-import dotenv from 'dotenv';
+import config from '../../config.js';
 
-dotenv.config();
 
-const keyPath = path.resolve(process.env.GOOGLE_CLOUD_KEY_PATH);
-
-// Combined scopes for both Forms and Drive
 const SCOPES = [
   'https://www.googleapis.com/auth/forms.responses.readonly',
   'https://www.googleapis.com/auth/forms.body.readonly',
@@ -14,7 +9,7 @@ const SCOPES = [
 ];
 
 const auth = new GoogleAuth({
-  keyFile: keyPath,
+  keyFile: config.gCloudKeyPath,
   scopes: SCOPES,
 });
 

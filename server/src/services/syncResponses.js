@@ -1,12 +1,11 @@
-import { PrismaClient } from '@prisma/client'
-import { getResponses } from './formsService.js'
-import { transformFormResponse, validateRecord } from '../dataMapper.js'
+import prisma from '../prismaClient.js'; 
+import config from '../config.js';
+import { getResponses } from './google/forms.js'
+import { transformFormResponse, validateRecord } from '../utils/dataMapper.js'
 
-const prisma = new PrismaClient()
-
-export async function syncFormResponses(formsClient) {
+export async function syncFormResponses() {
   try {
-    const responses = await getResponses(formsClient)
+    const responses = await getResponses(config.form.id)
     
     // Get existing response IDs
     const existingResponseIds = new Set(
@@ -27,25 +26,22 @@ export async function syncFormResponses(formsClient) {
         const validation = validateRecord(dbRecord);
         if (!validation.isValid) {
           console.error(`Validation failed for response ${response.responseId}:`, validation.errors);
-          errorCount++;
           continue;
         }
         
-        // Create the application record
-        await prisma.application.create({
-          data: dbRecord
-        });
-        
+        await prisma.application.create({data: dbRecord});
+
       } catch (error) {
         console.error(`Error processing response ${response.responseId}:`, error.message);
       }
     }
     
     if (newResponses.length > 0) {
-      console.log(`Ssynced ${newResponses.length} new responses`);
+      console.log(`Synced ${newResponses.length} new responses`);
     }
     
   } catch (error) {
     console.error('Error syncing form responses:', error)
   }
 } 
+
