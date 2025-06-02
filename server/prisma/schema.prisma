@@ -8,7 +8,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model TestMessage {
-  id   Int    @id @default(autoincrement())
-  text String
+model Application {
+  // app data
+  id                    String              @id @default(uuid())
+  status                ApplicationStatus   @default(SUBMITTED)
+
+  // form metadata
+  responseID            String              @unique
+  submittedAt           DateTime            @default(now())
+  
+  // Basic Information
+  email                 String              
+  firstName             String
+  lastName              String
+  studentId             String              
+  phoneNumber           String
+  
+  // Academic Information
+  graduationYear        String
+  isTransferStudent     Boolean
+  priorCollegeYears     String?
+  cumulativeGpa         Decimal            @db.Decimal(3,2)
+  majorGpa              Decimal            @db.Decimal(3,2)
+  major1                String
+  major2                String?
+  
+  // Demographic Information
+  gender                String?
+  isFirstGeneration     Boolean
+  
+  // File Upload URLs (direct access for displaying in UI)
+  resumeUrl             String             // PDF download link
+  blindResumeUrl        String             // PDF download link  
+  headshotUrl           String             // Image URL for profile display
+  coverLetterUrl        String?             // PDF download link
+  videoUrl              String?             // Video stream/download link
+  
+  // Raw form responses (backup/additional fields)
+  rawResponses          Json?
+  
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WAITLISTED
 }

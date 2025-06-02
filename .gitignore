@@ -8,3 +8,4 @@ client/.env
 server/.env
 .vscode/
 
+google-cloud-key.json

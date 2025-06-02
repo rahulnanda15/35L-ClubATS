@@ -4,6 +4,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import CandidateList from './pages/CandidateList';
 import CandidateDetail from './pages/CandidateDetail';
 import UserDashboard from './pages/UserDashboard';
+import ApplicationList from './pages/ApplicationList';
+import ApplicationDetail from './pages/ApplicationDetail';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
@@ -17,10 +19,10 @@ export default function App() {
         path="/"
         element={<LandingPage />}>
       </Route>
-      {/*<Route
+      <Route
         path="/admin"
         element={<AdminDashboard />}>
-      </Route> */}
+      </Route>
       <Route
         path="/signup"
         element={<SignUp />}>
@@ -31,8 +33,23 @@ export default function App() {
       </Route>
 
       <Route
-        path="/candidate-list"
-        element={<CandidateList />}>
+        path="/application-list"
+        element={<ApplicationList />}>
+      </Route>
+
+      <Route
+        path="/application/:id"
+        element={<ApplicationDetail />}>
+      </Route>
+
+      <Route 
+        path="/candidates/:id" 
+        element={<CandidateDetail />}>
+      </Route>
+
+      <Route
+        path="/dashboard"
+        element={<UserDashboard />}>
       </Route>
 
       {/*<Route 
