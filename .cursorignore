@@ -1,0 +1,3 @@
+server/google-cloud-key.json
+.env
+!.env.example

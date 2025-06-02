@@ -1,6 +1,105 @@
 {
-    "id": "1BRxxVl7hoHgGWRaCRUb2luiPF7EiWlPkQErzv0bsSbU",
-    "question_ids": {
-       
+    "form_id": "1Uj2ojS79x3HwDsBHnVO-P8nYFSnSWssPxLDquH1_zzM",
+    "database_mappings": {
+        "6a8686db": {
+            "field": "email",
+            "type": "string",
+            "required": true,
+            "validation": "email"
+        },
+        "3d3e7556": {
+            "field": "firstName",
+            "type": "string",
+            "required": true
+        },
+        "46fe70e5": {
+            "field": "lastName",
+            "type": "string",
+            "required": true
+        },
+        "545802dd": {
+            "field": "studentId",
+            "type": "string",
+            "required": true,
+            "validation": "numeric"
+        },
+        "2358a5dd": {
+            "field": "graduationYear",
+            "type": "string",
+            "required": true
+        },
+        "6c603320": {
+            "field": "isTransferStudent",
+            "type": "boolean",
+            "transform": {
+                "Yes": true,
+                "No": false
+            }
+        },
+        "147c7187": {
+            "field": "priorCollegeYears",
+            "type": "string"
+        },
+        "478c27e0": {
+            "field": "phoneNumber",
+            "type": "string",
+            "validation": "phone"
+        },
+        "578428f6": {
+            "field": "gender",
+            "type": "string"
+        },
+        "525a64bc": {
+            "field": "major1",
+            "type": "string",
+            "required": true
+        },
+        "54a6bc46": {
+            "field": "major2",
+            "type": "string"
+        },
+        "00e85f54": {
+            "field": "isFirstGeneration",
+            "type": "boolean",
+            "transform": {
+                "Yes": true,
+                "No": false
+            }
+        },
+        "761cade1": {
+            "field": "cumulativeGpa",
+            "type": "decimal",
+            "validation": "gpa"
+        },
+        "05f682ca": {
+            "field": "majorGpa",
+            "type": "decimal",
+            "validation": "gpa"
+        },
+        "5be7288f": {
+            "field": "resumeUrl",
+            "type": "file",
+            "file_type": "pdf"
+        },
+        "366cc943": {
+            "field": "blindResumeUrl",
+            "type": "file",
+            "file_type": "pdf"
+        },
+        "5a8fae69": {
+            "field": "headshotUrl",
+            "type": "file",
+            "file_type": "image"
+        },
+        "0cfd5850": {
+            "field": "coverLetterUrl",
+            "type": "file",
+            "file_type": "pdf"
+        },
+        "56adb447": {
+            "field": "videoUrl",
+            "type": "file",
+            "file_type": "video"
+        }
     }
 }

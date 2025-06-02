@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
-import CandidateList from './pages/CandidateList';
+import ApplicationList from './pages/ApplicationList';
+import ApplicationDetail from './pages/ApplicationDetail';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
@@ -24,8 +25,13 @@ export default function App() {
       </Route>
 
       <Route
-        path="/candidate-list"
-        element={<CandidateList />}>
+        path="/application-list"
+        element={<ApplicationList />}>
+      </Route>
+
+      <Route
+        path="/application/:id"
+        element={<ApplicationDetail />}>
       </Route>
 
       <Route
