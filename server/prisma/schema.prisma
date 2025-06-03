@@ -39,7 +39,7 @@ model Application {
   
   // File Upload URLs (direct access for displaying in UI)
   resumeUrl             String             // PDF download link
-  blindResumeUrl        String             // PDF download link  
+  blindResumeUrl        String?             // PDF download link  
   headshotUrl           String             // Image URL for profile display
   coverLetterUrl        String?             // PDF download link
   videoUrl              String?             // Video stream/download link

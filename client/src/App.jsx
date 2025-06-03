@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
-import CandidateList from './pages/CandidateList';
 import CandidateDetail from './pages/CandidateDetail';
 import UserDashboard from './pages/UserDashboard';
 import ApplicationList from './pages/ApplicationList';
@@ -58,7 +57,7 @@ export default function App() {
       </Route>*/}
 
       <Route
-        path="/dashboard"
+        path="/user-dashboard"
         element={<UserDashboard />}>
       </Route>
 

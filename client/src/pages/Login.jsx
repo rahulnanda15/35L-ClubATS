@@ -111,7 +111,7 @@ const Login = () => {
     }
 
     alert(`Successfully logged in as ${username}`);
-    navigate('/candidate-list'); // Or wherever you want to redirect
+    navigate('/application-list'); // Or wherever you want to redirect
   };
 
   return (
