@@ -41,20 +41,10 @@ export default function App() {
         element={<ApplicationDetail />}>
       </Route>
 
-      <Route 
-        path="/candidates/:id" 
-        element={<CandidateDetail />}>
-      </Route>
-
       <Route
         path="/dashboard"
         element={<UserDashboard />}>
       </Route>
-
-      {/*<Route 
-        path="/candidates/:id" 
-        element={<CandidateDetail />}>
-      </Route>*/}
 
       <Route
         path="/user-dashboard"
