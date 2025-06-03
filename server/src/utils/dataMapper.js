@@ -89,9 +89,8 @@ function generateFileUrl(fileData, fileType) {
 //Validate a transformed record against the field mappings
 export function validateRecord(record) {
   const errors = [];
-  const mappings = getDatabaseMappings();
   
-  for (const [questionId, mapping] of Object.entries(mappings)) {
+  for (const [questionId, mapping] of Object.entries(config.form.database_mappings)) {
     const value = record[mapping.field];
     
     // Check required fields

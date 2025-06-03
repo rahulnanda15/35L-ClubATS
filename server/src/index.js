@@ -1,8 +1,7 @@
 import express from 'express';
 import cron from 'node-cron';
 
-import { syncFormResponses } from './services/syncResponses.js';
-
+import syncFormResponses from './services/syncResponses.js';
 import applicationsRoutes from './routes/applications.js';
 import filesRoutes from './routes/files.js';
 

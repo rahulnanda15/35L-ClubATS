@@ -3,7 +3,7 @@ import config from '../config.js';
 import { getResponses } from './google/forms.js'
 import { transformFormResponse, validateRecord } from '../utils/dataMapper.js'
 
-export async function syncFormResponses() {
+export default async function syncFormResponses() {
   try {
     const responses = await getResponses(config.form.id)
     
