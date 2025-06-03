@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -18,6 +18,7 @@ import {
     Analytics as AnalyticsIcon,
     Schedule as ScheduleIcon
 } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 
 const theme = createTheme({
     palette: {
@@ -99,6 +100,23 @@ const FeatureCard = ({ icon, title, description }) => (
 
 export default function LandingPage() {
     const navigate = useNavigate();
+    const { user, loading } = useAuth();
+
+    // Redirect if user is already logged in
+    useEffect(() => {
+        if (!loading && user) {
+            navigate('/');
+        }
+    }, [user, loading, navigate]);
+
+    // Don't render the landing page if user is already authenticated
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (user) {
+        return null; // Component will redirect via useEffect
+    }
 
     const features = [
         {

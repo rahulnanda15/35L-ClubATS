@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import apiClient from '../utils/api';
+import AuthenticatedImage from '../components/AuthenticatedImage';
+import AuthenticatedFileLink from '../components/AuthenticatedFileLink';
 
 export default function ApplicationDetail() {
   const { id } = useParams();
@@ -11,11 +14,7 @@ export default function ApplicationDetail() {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const response = await fetch(`/api/applications/${id}`);
-        if (!response.ok) {
-          throw new Error('Application not found');
-        }
-        const data = await response.json();
+        const data = await apiClient.get(`/applications/${id}`);
         setApplication(data);
       } catch (err) {
         setError(err.message);
@@ -211,53 +210,49 @@ export default function ApplicationDetail() {
               {application.resumeUrl && (
                 <div>
                   <strong>Resume:</strong><br />
-                  <a 
-                    href={application.resumeUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <AuthenticatedFileLink
+                    href={application.resumeUrl}
+                    filename={`${application.firstName}_${application.lastName}_Resume.pdf`}
                     style={{ color: '#007bff' }}
                   >
                     View Resume (PDF)
-                  </a>
+                  </AuthenticatedFileLink>
                 </div>
               )}
               {application.blindResumeUrl && (
                 <div>
                   <strong>Blind Resume:</strong><br />
-                  <a 
-                    href={application.blindResumeUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <AuthenticatedFileLink
+                    href={application.blindResumeUrl}
+                    filename={`${application.firstName}_${application.lastName}_Blind_Resume.pdf`}
                     style={{ color: '#007bff' }}
                   >
                     View Blind Resume (PDF)
-                  </a>
+                  </AuthenticatedFileLink>
                 </div>
               )}
               {application.coverLetterUrl && (
                 <div>
                   <strong>Cover Letter:</strong><br />
-                  <a 
-                    href={application.coverLetterUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <AuthenticatedFileLink
+                    href={application.coverLetterUrl}
+                    filename={`${application.firstName}_${application.lastName}_Cover_Letter.pdf`}
                     style={{ color: '#007bff' }}
                   >
                     View Cover Letter (PDF)
-                  </a>
+                  </AuthenticatedFileLink>
                 </div>
               )}
               {application.videoUrl && (
                 <div>
                   <strong>Video:</strong><br />
-                  <a 
-                    href={application.videoUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <AuthenticatedFileLink
+                    href={application.videoUrl}
+                    filename={`${application.firstName}_${application.lastName}_Video`}
                     style={{ color: '#007bff' }}
                   >
                     View Video
-                  </a>
+                  </AuthenticatedFileLink>
                 </div>
               )}
             </div>
@@ -269,7 +264,7 @@ export default function ApplicationDetail() {
           {application.headshotUrl ? (
             <div>
               <h4 style={{ marginBottom: '0.5rem' }}>Photo</h4>
-              <img 
+              <AuthenticatedImage
                 src={application.headshotUrl}
                 alt={`${application.firstName} ${application.lastName}`}
                 style={{
@@ -279,26 +274,7 @@ export default function ApplicationDetail() {
                   borderRadius: '8px',
                   border: '2px solid #ddd'
                 }}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
               />
-              <div 
-                style={{
-                  display: 'none',
-                  width: '200px',
-                  height: '200px',
-                  border: '2px dashed #ccc',
-                  borderRadius: '8px',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#666',
-                  fontSize: '0.875rem'
-                }}
-              >
-                Photo unavailable
-              </div>
             </div>
           ) : (
             <div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -9,9 +9,10 @@ import {
   ThemeProvider,
   createTheme,
   CssBaseline,
+  Alert,
 } from '@mui/material';
 import styled from '@emotion/styled';
-import { supabase } from '../supabase';
+import { useAuth } from '../context/AuthContext';
 
 const theme = createTheme({
   palette: {
@@ -86,38 +87,50 @@ const RightSection = styled(Box)(() => ({
 }));
 
 const SignUp = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [graduationClass, setGraduationClass] = useState('');
-  const [major, setMajor] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { register, user, loading } = useAuth();
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/');
+    }
+  }, [user, loading, navigate]);
+
+  // Don't render the signup form if user is already authenticated
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (user) {
+    return null; // Component will redirect via useEffect
+  }
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const { error } = await supabase.auth.signUp({
-      email: username,
+    setError('');
+
+    if (!email || !password || !fullName || !graduationClass) {
+      setError('All fields are required');
+      return;
+    }
+
+    const result = await register({
+      email,
       password,
-      options: {
-        data: {
-          full_name: fullName,
-          grad_class: graduationClass,
-          major: major,
-        },
-      },
+      fullName,
+      graduationClass
     });
 
-    if (error) {
-      alert('Sign up failed: ' + error.message);
-      console.error(error);
+    if (result.success) {
+      navigate('/application-list');
     } else {
-      alert(`Account created for ${username}! Please check your email to confirm.`);
-      setUsername('');
-      setPassword('');
-      setFullName('');
-      setGraduationClass('');
-      setMajor('');
-      navigate('/login');
+      setError(result.error);
     }
   };
 
@@ -155,6 +168,12 @@ const SignUp = () => {
                 Sign up
               </Typography>
 
+              {error && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  {error}
+                </Alert>
+              )}
+
               <Box component="form" onSubmit={handleSignUp} sx={{ width: '100%' }}>
                 <TextField
                   fullWidth
@@ -176,18 +195,10 @@ const SignUp = () => {
 
                 <TextField
                   fullWidth
-                  label="Field of Study"
-                  value={major}
-                  onChange={(e) => setMajor(e.target.value)}
-                  required
-                  sx={{ mb: 3 }}
-                />
-
-                <TextField
-                  fullWidth
                   label="Email"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   sx={{ mb: 3 }}
                 />

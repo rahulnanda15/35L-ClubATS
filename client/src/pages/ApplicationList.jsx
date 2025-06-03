@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import apiClient from '../utils/api';
 
 export default function ApplicationList() {
   const [sortKey, setSortKey] = useState('email');
@@ -10,11 +11,7 @@ export default function ApplicationList() {
   useEffect(() => {
     const fetchApplicants = async () => {
       try {
-        const response = await fetch('/api/applications');
-        if (!response.ok) {
-          throw new Error('Failed to fetch applications');
-        }
-        const data = await response.json();
+        const data = await apiClient.get('/applications');
         setApplicants(data);
       } catch (err) {
         setError(err.message);

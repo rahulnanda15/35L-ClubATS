@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
-import CandidateDetail from './pages/CandidateDetail';
 import UserDashboard from './pages/UserDashboard';
 import ApplicationList from './pages/ApplicationList';
 import ApplicationDetail from './pages/ApplicationDetail';
@@ -9,53 +8,94 @@ import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
 import ApplicationCycleManager from './pages/ApplicationCycleManager';
+import Home from './pages/Home';
 import NotFound from './pages/NotFound';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Protected Route wrapper
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  
+  return children;
+};
+
+const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
+      
+      {/* Protected Routes */}
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      }/>
+
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/application-list"
+        element={
+          <ProtectedRoute>
+            <ApplicationList />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/application/:id"
+        element={
+          <ProtectedRoute>
+            <ApplicationDetail />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <UserDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      
+      <Route
+        path="/application-cycles"
+        element={
+          <ProtectedRoute>
+            <ApplicationCycleManager />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
 export default function App() {
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={<LandingPage />}>
-      </Route>
-      <Route
-        path="/admin"
-        element={<AdminDashboard />}>
-      </Route>
-      <Route
-        path="/signup"
-        element={<SignUp />}>
-      </Route>
-      <Route
-        path="/login"
-        element={<Login />}>
-      </Route>
-
-      <Route
-        path="/application-list"
-        element={<ApplicationList />}>
-      </Route>
-
-      <Route
-        path="/application/:id"
-        element={<ApplicationDetail />}>
-      </Route>
-
-      <Route
-        path="/dashboard"
-        element={<UserDashboard />}>
-      </Route>
-
-      <Route
-        path="/user-dashboard"
-        element={<UserDashboard />}>
-      </Route>
-
-      <Route
-        path="/application-cycles"
-        element={<ApplicationCycleManager />}
-      />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -9,9 +9,10 @@ import {
   ThemeProvider,
   createTheme,
   CssBaseline,
+  Alert,
 } from '@mui/material';
 import styled from '@emotion/styled';
-import { supabase } from '../supabase'; // Make sure path is correct
+import { useAuth } from '../context/AuthContext';
 
 const theme = createTheme({
   palette: {
@@ -87,31 +88,44 @@ const RightSection = styled(Box)(() => ({
 }));
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login, user, loading } = useAuth();
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/');
+    }
+  }, [user, loading, navigate]);
+
+  // Don't render the login form if user is already authenticated
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (user) {
+    return null; // Component will redirect via useEffect
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
 
-    if (!username || !password) {
-      alert('Please enter both email and password.');
+    if (!email || !password) {
+      setError('Please enter both email and password.');
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: username,
-      password,
-    });
+    const result = await login(email, password);
 
-    if (error) {
-      console.error('Login error:', error.message);
-      alert('Login failed: ' + error.message);
-      return;
+    if (result.success) {
+      navigate('/application-list');
+    } else {
+      setError(result.error);
     }
-
-    alert(`Successfully logged in as ${username}`);
-    navigate('/application-list'); // Or wherever you want to redirect
   };
 
   return (
@@ -144,13 +158,20 @@ const Login = () => {
                 Sign in
               </Typography>
 
+              {error && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  {error}
+                </Alert>
+              )}
+
               <Box component="form" onSubmit={handleLogin} sx={{ width: '100%' }}>
                 <TextField
                   fullWidth
-                  label="Username"
+                  label="Email"
                   variant="outlined"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   sx={{ mb: 3 }}
                 />
