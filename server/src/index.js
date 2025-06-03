@@ -1,16 +1,21 @@
 import express from 'express';
+import cors from 'cors';
 import cron from 'node-cron';
 
 import syncFormResponses from './services/syncResponses.js';
 import applicationsRoutes from './routes/applications.js';
 import filesRoutes from './routes/files.js';
+import authRoutes from './routes/auth.js';
 
 import config from './config.js';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
+// Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationsRoutes);
 app.use('/api/files', filesRoutes);
 

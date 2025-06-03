@@ -1,9 +1,13 @@
 import express from 'express';
 import prisma from '../prismaClient.js'; 
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Get all applications
+// All routes below require authentication
+router.use(requireAuth);
+
+// Get all applications 
 router.get('/', async (req, res) => {
   try {
     const applications = await prisma.application.findMany({

@@ -1,15 +1,16 @@
 import express from 'express';
 import { getFileStream } from '../services/google/drive.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
-
+// All routes below require authentication
+router.use(requireAuth);
 
 // View image files (CORS-friendly proxy)
 router.get('/:fileId/image', async (req, res) => {
   try {
     const { fileId } = req.params;
-    
     
     const fileStream = await getFileStream(fileId);
     

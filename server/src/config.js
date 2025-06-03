@@ -10,7 +10,8 @@ const formConfig = JSON.parse(fs.readFileSync(formConfigPath, 'utf8'));
 
 const config = {
   port: process.env.PORT || 3001,
-  
+  jwtSecret: process.env.JWT_SECRET, 
+
   dbUrl: process.env.DATABASE_URL,
   gCloudKeyPath: path.resolve(process.env.GOOGLE_CLOUD_KEY_PATH),
 

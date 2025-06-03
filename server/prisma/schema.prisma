@@ -64,10 +64,6 @@ model Application {
   // Raw form responses (backup/additional fields)
   rawResponses          Json?
   
-  // User relation (optional for backward compatibility)
-  userId                String?
-  user                  User?              @relation(fields: [userId], references: [id])
-  
   @@map("applications")
 }
 
@@ -85,7 +81,7 @@ model ApplicationCycle {
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  @@map("application_cycle")
+  @@map("application_cycles")
 }
 
 model Task {
@@ -99,13 +95,5 @@ model Task {
   applicationId String?
   cycleId     String?
 
-  @@map("task")
-}
-
-model User {
-  id    String @id @default(uuid())
-  email String @unique
-  name  String
-
-  @@map("user_account")
+  @@map("tasks")
 }
