@@ -78,3 +78,34 @@ enum ApplicationStatus {
   REJECTED
   WAITLISTED
 }
+
+model ApplicationCycle {
+  id        String   @id @default(uuid())
+  name      String
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("application_cycle")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  completed   Boolean  @default(false)
+
+  assignedTo  String?
+  applicationId String?
+  cycleId     String?
+
+  @@map("task")
+}
+
+model User {
+  id    String @id @default(uuid())
+  email String @unique
+  name  String
+
+  @@map("user_account")
+}
