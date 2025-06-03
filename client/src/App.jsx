@@ -8,8 +8,8 @@ import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
 import ApplicationCycleManager from './pages/ApplicationCycleManager';
-import Home from './pages/Home';
 import NotFound from './pages/NotFound';
+import Layout from './components/Layout';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Protected Route wrapper
@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" />;
   }
   
-  return children;
+  return <Layout>{children}</Layout>;
 };
 
 const AppRoutes = () => {
@@ -36,10 +36,9 @@ const AppRoutes = () => {
       {/* Protected Routes */}
       <Route path="/" element={
         <ProtectedRoute>
-          <Home />
+          <UserDashboard />
         </ProtectedRoute>
       }/>
-
 
       <Route
         path="/admin"

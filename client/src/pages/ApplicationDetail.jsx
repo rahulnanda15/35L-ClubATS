@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeftIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import apiClient from '../utils/api';
 import AuthenticatedImage from '../components/AuthenticatedImage';
 import AuthenticatedFileLink from '../components/AuthenticatedFileLink';
+import '../styles/ApplicationDetail.css';
 
 export default function ApplicationDetail() {
   const { id } = useParams();
@@ -28,151 +30,125 @@ export default function ApplicationDetail() {
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <div>Loading application details...</div>
+      <div className="application-detail">
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          Loading application details...
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: '2rem' }}>
+      <div className="application-detail">
         <div style={{ color: 'red', marginBottom: '1rem' }}>Error: {error}</div>
-        <button onClick={() => navigate('/application-list')}>
-          ← Back to Applications
-        </button>
+        <Link to="/application-list" className="back-link">
+          <ArrowLeftIcon className="back-icon" />
+          Back to Applications
+        </Link>
       </div>
     );
   }
 
   if (!application) {
     return (
-      <div style={{ padding: '2rem' }}>
+      <div className="application-detail">
         <div style={{ marginBottom: '1rem' }}>Application not found</div>
-        <button onClick={() => navigate('/application-list')}>
-          ← Back to Applications
-        </button>
+        <Link to="/application-list" className="back-link">
+          <ArrowLeftIcon className="back-icon" />
+          Back to Applications
+        </Link>
       </div>
     );
   }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'ACCEPTED': return '#28a745';
-      case 'REJECTED': return '#dc3545';
-      case 'UNDER_REVIEW': return '#ffc107';
-      case 'WAITLISTED': return '#6f42c1';
-      default: return '#6c757d';
-    }
-  };
-
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      {/* Header with back button */}
-      <div style={{ marginBottom: '2rem' }}>
-        <button 
-          onClick={() => navigate('/application-list')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#007bff',
-            cursor: 'pointer',
-            fontSize: '1rem'
-          }}
-        >
-          ← Back to Applications
-        </button>
+    <div className="application-detail">
+      {/* Header with back button and status */}
+      <div className="detail-header">
+        <div className="header-left">
+          <Link to="/application-list" className="back-link">
+            <ArrowLeftIcon className="back-icon" />
+            Back to Applications
+          </Link>
+          <div className="name-and-status">
+            <h1 className="candidate-name">
+              {application.firstName} {application.lastName}
+            </h1>
+            <div className={`status-badge ${application.status.toLowerCase()}`}>
+              {application.status.replace('_', ' ')}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main content area */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1fr 200px', 
-        gap: '2rem',
-        alignItems: 'start'
-      }}>
+      <div className="detail-content">
         {/* Left column - Application details */}
-        <div>
-          <div style={{ marginBottom: '2rem' }}>
-            <h1 style={{ margin: '0 0 0.5rem 0', color: '#333' }}>
-              {application.firstName} {application.lastName}
-            </h1>
-            <div style={{
-              display: 'inline-block',
-              padding: '0.25rem 0.75rem',
-              borderRadius: '4px',
-              backgroundColor: getStatusColor(application.status),
-              color: 'white',
-              fontSize: '0.875rem',
-              fontWeight: 'bold'
-            }}>
-              {application.status}
-            </div>
-          </div>
-
+        <div className="detail-main">
           {/* Basic Information */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>
-              Basic Information
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div>
-                <strong>Email:</strong><br />
-                <a href={`mailto:${application.email}`} style={{ color: '#007bff' }}>
-                  {application.email}
-                </a>
+          <div className="info-section">
+            <h2 className="section-title">Basic Information</h2>
+            <div className="info-grid">
+              <div className="info-item">
+                <span className="info-label">Email</span>
+                <span className="info-value">
+                  <a href={`mailto:${application.email}`}>{application.email}</a>
+                </span>
               </div>
-              <div>
-                <strong>Phone:</strong><br />
-                {application.phoneNumber}
+              <div className="info-item">
+                <span className="info-label">Phone</span>
+                <span className="info-value">{application.phoneNumber}</span>
               </div>
-              <div>
-                <strong>Student ID:</strong><br />
-                {application.studentId}
+              <div className="info-item">
+                <span className="info-label">Student ID</span>
+                <span className="info-value">{application.studentId}</span>
               </div>
-              <div>
-                <strong>Submitted:</strong><br />
-                {new Date(application.submittedAt).toLocaleDateString()}
+              <div className="info-item">
+                <span className="info-label">Submitted</span>
+                <span className="info-value">
+                  {new Date(application.submittedAt).toLocaleDateString()}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Academic Information */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>
-              Academic Information
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div>
-                <strong>Graduation Year:</strong><br />
-                {application.graduationYear}
+          <div className="info-section">
+            <h2 className="section-title">Academic Information</h2>
+            <div className="info-grid">
+              <div className="info-item">
+                <span className="info-label">Graduation Year</span>
+                <span className="info-value">{application.graduationYear}</span>
               </div>
-              <div>
-                <strong>Transfer Student:</strong><br />
-                {application.isTransferStudent ? 'Yes' : 'No'}
+              <div className="info-item">
+                <span className="info-label">Transfer Student</span>
+                <span className="info-value">
+                  {application.isTransferStudent ? 'Yes' : 'No'}
+                </span>
               </div>
-              <div>
-                <strong>Cumulative GPA:</strong><br />
-                {application.cumulativeGpa}
+              <div className="info-item">
+                <span className="info-label">Cumulative GPA</span>
+                <span className="info-value">{application.cumulativeGpa}</span>
               </div>
-              <div>
-                <strong>Major GPA:</strong><br />
-                {application.majorGpa}
+              <div className="info-item">
+                <span className="info-label">Major GPA</span>
+                <span className="info-value">{application.majorGpa}</span>
               </div>
-              <div>
-                <strong>Primary Major:</strong><br />
-                {application.major1}
+              <div className="info-item">
+                <span className="info-label">Primary Major</span>
+                <span className="info-value">{application.major1}</span>
               </div>
               {application.major2 && (
-                <div>
-                  <strong>Secondary Major:</strong><br />
-                  {application.major2}
+                <div className="info-item">
+                  <span className="info-label">Secondary Major</span>
+                  <span className="info-value">{application.major2}</span>
                 </div>
               )}
               {application.priorCollegeYears && (
-                <div>
-                  <strong>Prior College Years:</strong><br />
-                  {application.priorCollegeYears}
+                <div className="info-item">
+                  <span className="info-label">Prior College Years</span>
+                  <span className="info-value">{application.priorCollegeYears}</span>
                 </div>
               )}
             </div>
@@ -180,21 +156,21 @@ export default function ApplicationDetail() {
 
           {/* Demographic Information */}
           {(application.gender || application.isFirstGeneration !== null) && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>
-                Demographic Information
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="info-section">
+              <h2 className="section-title">Demographic Information</h2>
+              <div className="info-grid">
                 {application.gender && (
-                  <div>
-                    <strong>Gender:</strong><br />
-                    {application.gender}
+                  <div className="info-item">
+                    <span className="info-label">Gender</span>
+                    <span className="info-value">{application.gender}</span>
                   </div>
                 )}
                 {application.isFirstGeneration !== null && (
-                  <div>
-                    <strong>First Generation:</strong><br />
-                    {application.isFirstGeneration ? 'Yes' : 'No'}
+                  <div className="info-item">
+                    <span className="info-label">First Generation</span>
+                    <span className="info-value">
+                      {application.isFirstGeneration ? 'Yes' : 'No'}
+                    </span>
                   </div>
                 )}
               </div>
@@ -202,56 +178,54 @@ export default function ApplicationDetail() {
           )}
 
           {/* Documents */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>
-              Documents
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="info-section">
+            <h2 className="section-title">Documents</h2>
+            <div className="info-grid">
               {application.resumeUrl && (
-                <div>
-                  <strong>Resume:</strong><br />
+                <div className="info-item">
                   <AuthenticatedFileLink
                     href={application.resumeUrl}
                     filename={`${application.firstName}_${application.lastName}_Resume.pdf`}
-                    style={{ color: '#007bff' }}
+                    className="document-link"
                   >
-                    View Resume (PDF)
+                    <DocumentIcon className="document-icon" />
+                    Resume (PDF)
                   </AuthenticatedFileLink>
                 </div>
               )}
               {application.blindResumeUrl && (
-                <div>
-                  <strong>Blind Resume:</strong><br />
+                <div className="info-item">
                   <AuthenticatedFileLink
                     href={application.blindResumeUrl}
                     filename={`${application.firstName}_${application.lastName}_Blind_Resume.pdf`}
-                    style={{ color: '#007bff' }}
+                    className="document-link"
                   >
-                    View Blind Resume (PDF)
+                    <DocumentIcon className="document-icon" />
+                    Blind Resume (PDF)
                   </AuthenticatedFileLink>
                 </div>
               )}
               {application.coverLetterUrl && (
-                <div>
-                  <strong>Cover Letter:</strong><br />
+                <div className="info-item">
                   <AuthenticatedFileLink
                     href={application.coverLetterUrl}
                     filename={`${application.firstName}_${application.lastName}_Cover_Letter.pdf`}
-                    style={{ color: '#007bff' }}
+                    className="document-link"
                   >
-                    View Cover Letter (PDF)
+                    <DocumentIcon className="document-icon" />
+                    Cover Letter (PDF)
                   </AuthenticatedFileLink>
                 </div>
               )}
               {application.videoUrl && (
-                <div>
-                  <strong>Video:</strong><br />
+                <div className="info-item">
                   <AuthenticatedFileLink
                     href={application.videoUrl}
                     filename={`${application.firstName}_${application.lastName}_Video`}
-                    style={{ color: '#007bff' }}
+                    className="document-link"
                   >
-                    View Video
+                    <DocumentIcon className="document-icon" />
+                    Video
                   </AuthenticatedFileLink>
                 </div>
               )}
@@ -259,43 +233,22 @@ export default function ApplicationDetail() {
           </div>
         </div>
 
-        {/* Right column - Headshot */}
-        <div style={{ textAlign: 'center' }}>
-          {application.headshotUrl ? (
-            <div>
-              <h4 style={{ marginBottom: '0.5rem' }}>Photo</h4>
+        {/* Right column - Photo */}
+        <div className="detail-sidebar">
+          <div className="candidate-photo">
+            <h3 className="photo-title">Photo</h3>
+            {application.headshotUrl ? (
               <AuthenticatedImage
                 src={application.headshotUrl}
                 alt={`${application.firstName} ${application.lastName}`}
-                style={{
-                  width: '200px',
-                  height: '200px',
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                  border: '2px solid #ddd'
-                }}
+                className="photo-image"
               />
-            </div>
-          ) : (
-            <div>
-              <h4 style={{ marginBottom: '0.5rem' }}>Photo</h4>
-              <div 
-                style={{
-                  width: '200px',
-                  height: '200px',
-                  border: '2px dashed #ccc',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#666',
-                  fontSize: '0.875rem'
-                }}
-              >
+            ) : (
+              <div className="photo-placeholder">
                 No photo available
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
