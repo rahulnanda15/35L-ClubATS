@@ -49,6 +49,52 @@
   gap: 1rem;
 }
 
+.average-grades-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.average-grade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  border: 1px solid #e9ecef;
+  min-width: 80px;
+}
+
+.average-grade-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.average-grade-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.average-grade-total {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.average-grade-count {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
 .candidate-name {
   font-size: 1.875rem;
   font-weight: 700;
@@ -257,6 +303,44 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+  gap: 10px;
+}
+
+.na-button {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.na-button:hover {
+  background-color: #fee2e2;
+}
+
+.na-button:active {
+  background-color: #fecaca;
+}
+
+/* Style for when N/A is active */
+.na-button[data-active="true"] {
+  background-color: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+/* Style for disabled sliders */
+.grade-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.grade-slider:disabled + .slider-ticks .tick {
+  opacity: 0.5;
 }
 
 .grade-value {
