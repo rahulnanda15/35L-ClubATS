@@ -15,6 +15,9 @@ export default function ApplicationDetail() {
   const [resumeGrade, setResumeGrade] = useState(0); // Start at 0
   const [videoGrade, setVideoGrade] = useState(0); // Start at 0
   const [coverLetterGrade, setCoverLetterGrade] = useState(0); // Start at 0
+  const [currentUserId, setCurrentUserId] = useState(null); // Store current user ID
+  const [isSaving, setIsSaving] = useState(false); // Loading state for save operation
+  const [saveStatus, setSaveStatus] = useState({ type: '', message: '' }); // Save status message
 
   const resetGrades = () => {
     setResumeGrade(0);
@@ -34,7 +37,19 @@ export default function ApplicationDetail() {
       }
     };
 
+    // Fetch current user ID
+    const fetchCurrentUserId = async () => {
+      try {
+        const response = await apiClient.get('/applications/current-user/id');
+        setCurrentUserId(response.userId);
+        console.log('Current User ID:', response.userId);
+      } catch (err) {
+        console.error('Error fetching current user ID:', err);
+      }
+    };
+
     fetchApplication();
+    fetchCurrentUserId();
   }, [id]);
 
   if (loading) {
@@ -81,9 +96,12 @@ export default function ApplicationDetail() {
             Back to Applications
           </Link>
           <div className="name-and-status">
-            <h1 className="candidate-name">
-              {application.firstName} {application.lastName}
-            </h1>
+            <div className="candidate-header">
+              <h1 className="candidate-name">
+                {application.firstName} {application.lastName}
+              </h1>
+              <span className="applicant-id">ID: {application.id}</span>
+            </div>
             <div className={`status-badge ${application.status.toLowerCase()}`}>
               {application.status.replace('_', ' ')}
             </div>
@@ -327,13 +345,68 @@ export default function ApplicationDetail() {
                 </div>
               </div>
               <div className="grading-actions">
-                <button className="grading-button save-button">Save Grades</button>
+                <button 
+                  className="grading-button save-button"
+                  onClick={async () => {
+                    if (!currentUserId) {
+                      setSaveStatus({ type: 'error', message: 'You must be logged in to save grades' });
+                      return;
+                    }
+
+                    // Validate grades
+                    if (resumeGrade < 1 || videoGrade < 1 || coverLetterGrade < 1) {
+                      setSaveStatus({ type: 'error', message: 'All grades must be at least 1' });
+                      return;
+                    }
+
+                    setIsSaving(true);
+                    setSaveStatus({ type: 'info', message: 'Saving grades...' });
+
+                    try {
+                      const response = await apiClient.post(`/applications/${id}/grades`, {
+                        resume_grade: resumeGrade,
+                        video_grade: videoGrade,
+                        cover_letter_grade: coverLetterGrade
+                      });
+
+                      console.log('Grades saved successfully:', response);
+                      
+                      // Update status message
+                      setSaveStatus({ 
+                        type: 'success', 
+                        message: 'Grades saved successfully!' 
+                      });
+                      
+                      // Clear success message after 3 seconds
+                      setTimeout(() => {
+                        setSaveStatus({ type: '', message: '' });
+                      }, 3000);
+                      
+                    } catch (error) {
+                      console.error('Error saving grades:', error);
+                      const errorMessage = error.response?.data?.error || 'Failed to save grades. Please try again.';
+                      setSaveStatus({ 
+                        type: 'error', 
+                        message: errorMessage 
+                      });
+                    } finally {
+                      setIsSaving(false);
+                    }
+                  }}
+                >
+                  {isSaving ? 'Saving...' : 'Save Grades'}
+                </button>
                 <button 
                   className="grading-button reset-button"
                   onClick={resetGrades}
                 >
                   Reset
                 </button>
+                {saveStatus.message && (
+                  <div className={`save-status ${saveStatus.type}`}>
+                    {saveStatus.message}
+                  </div>
+                )}
               </div>
             </div>
           </div>
