@@ -63,6 +63,9 @@ model Application {
   
   // Raw form responses (backup/additional fields)
   rawResponses          Json?
+
+  cycleId               String
+  cycle                 ApplicationCycle    @relation(fields: [cycleId], references: [id])
   
   @@map("applications")
 }
@@ -80,6 +83,8 @@ model ApplicationCycle {
   name      String
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  applications Application[]
 
   @@map("application_cycles")
 }
