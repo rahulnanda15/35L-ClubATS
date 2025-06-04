@@ -203,4 +203,41 @@ router.post('/advance-round', async (req, res) => {
   }
 });
 
+// Fetch all application cycles
+router.get('/cycles', async (req, res) => {
+  try {
+    const cycles = await prisma.applicationCycle.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(cycles);
+  } catch (error) {
+    console.error('[GET /api/admin/cycles]', error);
+    res.status(500).json({ error: 'Failed to fetch application cycles' });
+  }
+});
+
+// Set a cycle as active
+router.post('/cycles/:id/activate', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Deactivate all current cycles
+    await prisma.applicationCycle.updateMany({
+      where: { isActive: true },
+      data: { isActive: false }
+    });
+
+    // Activate selected one
+    const updated = await prisma.applicationCycle.update({
+      where: { id },
+      data: { isActive: true }
+    });
+
+    res.json({ message: 'Cycle activated', cycle: updated });
+  } catch (error) {
+    console.error('[POST /api/admin/cycles/:id/activate]', error);
+    res.status(500).json({ error: 'Failed to activate cycle' });
+  }
+});
+
 export default router;
