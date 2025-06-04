@@ -43,7 +43,10 @@ import {
   Avatar,
   Alert,
   Checkbox,
-  Fab
+  Fab,
+  Switch,
+  FormControlLabel,
+  Snackbar,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -64,11 +67,15 @@ import {
   ThumbUp as ThumbUpIcon,
   ThumbDown as ThumbDownIcon,
   SkipNext as SkipNextIcon,
-  FilterList as FilterListIcon
+  FilterList as FilterListIcon,
+  Save as SaveIcon,
+  Brightness4 as DarkModeIcon,
+  Brightness7 as LightModeIcon
 } from '@mui/icons-material';
 
-const theme = createTheme({
+const createAppTheme = (isDarkMode) => createTheme({
   palette: {
+    mode: isDarkMode ? 'dark' : 'light',
     primary: {
       main: '#1976d2',
       light: '#42a5f5',
@@ -78,26 +85,26 @@ const theme = createTheme({
       main: '#fff'
     },
     background: {
-      default: '#f5f7fa',
-      paper: '#ffffff'
+      default: isDarkMode ? '#121212' : '#f5f7fa',
+      paper: isDarkMode ? '#1e1e1e' : '#ffffff'
     },
     text: {
-      primary: '#2c3e50',
-      secondary: '#7f8c8d'
+      primary: isDarkMode ? '#fff' : '#2c3e50',
+      secondary: isDarkMode ? '#b0b0b0' : '#7f8c8d'
     }
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
       fontWeight: 600,
-      color: '#2c3e50'
+      color: isDarkMode ? '#fff' : '#2c3e50'
     },
     h6: {
       fontWeight: 600,
-      color: '#2c3e50'
+      color: isDarkMode ? '#fff' : '#2c3e50'
     },
     body2: {
-      color: '#7f8c8d'
+      color: isDarkMode ? '#b0b0b0' : '#7f8c8d'
     }
   },
   components: {
@@ -115,12 +122,19 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '12px',
-          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
-          border: '1px solid #f0f0f0',
+          boxShadow: isDarkMode ? '0 2px 12px rgba(0, 0, 0, 0.3)' : '0 2px 12px rgba(0, 0, 0, 0.08)',
+          border: isDarkMode ? '1px solid #333' : '1px solid #f0f0f0',
           transition: 'all 0.2s ease-in-out',
           '&:hover': {
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.12)',
+            boxShadow: isDarkMode ? '0 4px 20px rgba(0, 0, 0, 0.4)' : '0 4px 20px rgba(0, 0, 0, 0.12)',
           }
+        }
+      }
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: isDarkMode ? '#1a1a1a' : '#1e293b'
         }
       }
     }
@@ -243,6 +257,15 @@ export default function AdminDashboard() {
   const [approvalFilter, setApprovalFilter] = useState('all');
   const [bulkAdvanceDialogOpen, setBulkAdvanceDialogOpen] = useState(false);
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    fullName: 'Ronit Anilkumar',
+    email: 'ronit@email.com',
+    graduationClass: '2026'
+  });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
   useEffect(() => {
     // Replace with actual logic for Supabase
     const fetchDashboardData = async () => {
@@ -358,6 +381,24 @@ export default function AdminDashboard() {
       console.error('Error advancing round: ', error);
     }
   };
+
+  const handleProfileUpdate = async () => {
+    try {
+      console.log('TODO: Update user profiles in Supabase backend');
+
+      setSnackbarMessage('Profile updated successfully.');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Error updating profile: ', error);
+      setSnackbarMessage('Error updating profile. Please try again.');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+    localStorage.setItem('darkMode', !isDarkMode);
+  }
 
   const filteredCandidates = candidates.filter(candidate => {
     const statusMatch = statusFilter === 'all' || candidate.currentRound === statusFilter;
@@ -577,8 +618,110 @@ export default function AdminDashboard() {
       case 'settings':
         return (
           <Box>
-            <Typography variant="h4" gutterBottom>Settings</Typography>
-            <Typography variant="body1">Settings interface to be implemented later.</Typography>
+            <Typography variant="h4" gutterBottom>Settings and Configuration</Typography>
+
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
+                <Card>
+                  <CardContent>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                      <Typography variant="h6">User Profile</Typography>
+                      <Button
+                      variant="contained"
+                      startIcon={<SaveIcon />}
+                      onClick={handleProfileUpdate}
+                      size="small"
+                      >
+                        Save Profile
+                      </Button>
+                    </Stack>
+                    <Stack spacing={3}>
+                      <TextField
+                      label="Full Name"
+                      value={userProfile.fullName}
+                      onChange={(e) => setUserProfile(prev => ({ ...prev, fullName: e.target.value }))}
+                      fullWidth
+                      />
+                      <TextField
+                      label="Email Address"
+                      type="email"
+                      value={userProfile.email}
+                      onChange={(e) => setUserProfile(prev => ({ ...prev, email: e.target.value }))}
+                      fullWidth
+                      />
+                      <TextField
+                      label="Graduation Class"
+                      value={userProfile.graduationClass}
+                      onChange={(e) => setUserProfile(prev => ({ ...prev, graduationClass: e.target.value }))}
+                      placeholder="e.g. 2026"
+                      fullWidth
+                      />
+                      <Typography variant="body2" color="text.secondary">
+                        Changes will be saved to your profile and reflected across the system.
+                      </Typography>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Appearance</Typography>
+                    <Stack spacing={3}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                          checked={isDarkMode}
+                          onChange={handleThemeToggle}
+                          icon={<LightModeIcon />}
+                          checkedIcon={<DarkModeIcon />}
+                          />
+                        }
+                        label={
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <Typography variant="body1">Dark Mode</Typography>
+                            {isDarkMode ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
+                          </Stack>
+                        }
+                      />
+                      <Typography variant="body2" color="text.secondary">
+                        Choose either a light or dark theme. Your preferences will be saved automatically.
+                      </Typography>
+
+                      <Box sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                        <Typography variant="subtitle2" gutterBottom>Theme Preview</Typography>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Box sx={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: '50%',
+                            bgcolor: 'primary.main'
+                          }} />
+                          <Box sx={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: '50%',
+                            bgcolor: 'background.paper',
+                            border: 1,
+                            borderColor: 'divider'
+                          }} />
+                          <Box sx={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: '50%',
+                            bgcolor: 'text.primary'
+                          }} />
+                          <Typography variant="caption" color="text.secondary">
+                            {isDarkMode ? 'Dark Theme Active' : 'Light Theme Active'}
+                          </Typography>
+                        </Stack>
+                      </Box>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
           </Box>
         );
       default:
@@ -636,7 +779,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={createAppTheme(isDarkMode)}>
       <CssBaseline />
       <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet"></link>
 
