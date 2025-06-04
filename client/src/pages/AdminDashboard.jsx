@@ -40,7 +40,10 @@ import {
   Paper,
   Menu,
   Divider,
-  Avatar
+  Avatar,
+  Alert,
+  Checkbox,
+  Fab
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -57,7 +60,11 @@ import {
   Download as DownloadIcon,
   Launch as LaunchIcon,
   MoreVert as MoreVertIcon,
-  AccountCircle as AccountCircleIcon
+  AccountCircle as AccountCircleIcon,
+  ThumbUp as ThumbUpIcon,
+  ThumbDown as ThumbDownIcon,
+  SkipNext as SkipNextIcon,
+  FilterList as FilterListIcon
 } from '@mui/icons-material';
 
 const theme = createTheme({
@@ -122,31 +129,41 @@ const theme = createTheme({
 
 const DRAWER_WIDTH = 280;
 
+const rounds = [
+  { key: 'resume', name: 'Resume Review', next: 'coffee_chat' },
+  { key: 'coffee_chat', name: 'Coffee Chat', next: 'interview1' },
+  { key: 'interview1', name: 'Interview Round 1', next: 'interview2' },
+  { key: 'interview2', name: 'Interview Round 2', next: 'final' },
+  { key: 'final', name: 'Final Decision', next: null }
+];
+
 const mockData = {
   totalApplicants: 187,
   applicationsReviewed: 82,
   upcomingInterviews: 24,
-  finalSelections: 'Pending'
+  finalSelections: 'Pending',
+  currentRound: 'interview1'
 };
 
 const mockTasks = [
-  { id: 1, title: 'Grade 3 Cover Letters', dueDate: 'Today', priority: 'High', category: 'Grading' },
-  { id: 2, title: 'Grade 4 Videos', dueDate: 'Tomorrow', priority: 'Medium', category: 'Grading' },
-  { id: 3, title: 'Sign up for interviews', dueDate: 'Feb 18, 2025', priority: 'Low', category: 'Interviews' },
-  { id: 4, title: 'Fill out referrals', dueDate: 'Feb 20, 2025', priority: 'Medium', category: 'Referrals' }
+  { id: 1, title: 'Grade Resume Reviews', dueDate: 'Today', priority: 'High', category: 'Grading', round: 'resume' },
+  { id: 2, title: 'Schedule Coffee Chats', dueDate: 'Tomorrow', priority: 'Medium', category: 'Grading', round: 'coffee_chat' },
+  { id: 3, title: 'Sign up for interviews', dueDate: 'Feb 18, 2025', priority: 'Low', category: 'Interviews', round: 'interview1' },
+  { id: 4, title: 'Fill out referrals', dueDate: 'Feb 20, 2025', priority: 'Medium', category: 'Referrals', round: 'final' }
 ];
 
 const mockCandidates = [
-  { id: 1, name: 'Pranav Kunnath', email: 'pranav@email.com', status: 'Interview Round 1', score: 85 },
-  { id: 2, name: 'Ronit Anilkumar', email: 'ronit@email.com', status: 'Resume Review', score: 92 },
-  { id: 3, name: 'Jishan Kharbanda', email: 'jishan@email.com', status: 'Final Decision', score: 78 },
-  { id: 4, name: 'Jackson Bae', email: 'jackson@email.com', status: 'Interview Round 2', score: 88 }
+  { id: 1, name: 'Pranav Kunnath', email: 'pranav@email.com', status: 'Interview Round 1', score: 85, currentRound: 'interview1', approved: null, submittedAt: '2025-01-15' },
+  { id: 2, name: 'Ronit Anilkumar', email: 'ronit@email.com', status: 'Resume Review', score: 92, currentRound: 'resume', approved: true, submittedAt: '2025-01-14' },
+  { id: 3, name: 'Jishan Kharbanda', email: 'jishan@email.com', status: 'Final Decision', score: 78, currentRound: 'final', approved: false, submittedAt: '2025-01-13' },
+  { id: 4, name: 'Jackson Bae', email: 'jackson@email.com', status: 'Interview Round 2', score: 88, currentRound: 'interview2', approved: null, submittedAt: '2025-01-12' }
 ];
 
 const StatusIndicator = ({ status }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Resume Review': return 'info';
+      case 'Coffee Chat': return 'secondary';
       case 'Interview Round 1': return 'warning';
       case 'Interview Round 2': return 'primary';
       case 'Final Decision': return 'success';
@@ -155,6 +172,51 @@ const StatusIndicator = ({ status }) => {
   };
 
   return <Chip label={status} color={getStatusColor(status)} size="small" />;
+};
+
+const ApprovalIndicator = ({ approved, onApprovalChange }) => {
+  if (approved === true) {
+    return (
+      <Chip
+        icon={<ThumbUpIcon />}
+        label="Approved"
+        color="success"
+        size="small"
+        onDelete={() => onApprovalChange(null)}
+      />
+    );
+  } else if (approved === false) {
+    return (
+      <Chip
+        icon={<ThumbDownIcon />}
+        label="Rejected"
+        color="error"
+        size="small"
+        onDelete={() => onApprovalChange(null)}
+      />
+    );
+  } else {
+    return (
+      <Stack direction="row" spacing={1}>
+        <IconButton
+          size="small"
+          color="success"
+          onClick={() => onApprovalChange(true)}
+          sx={{ bgcolor: 'success.light', '&:hover': { bgcolor: 'success.main' } }}
+        >
+          <ThumbUpIcon fontSize="small" />
+        </IconButton>
+        <IconButton
+          size="small"
+          color="error"
+          onClick={() => onApprovalChange(false)}
+          sx={{ bgcolor: 'error.light', '&:hover': { bgcolor: 'error.main' } }}
+        >
+          <ThumbDownIcon fontSize="small" />
+        </IconButton>
+      </Stack>
+    );
+  }
 };
 
 const PriorityIndicator = ({ priority }) => {
@@ -176,6 +238,10 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(mockData);
   const [tasks, setTasks] = useState(mockTasks);
   const [candidates, setCandidates] = useState(mockCandidates);
+
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [approvalFilter, setApprovalFilter] = useState('all');
+  const [bulkAdvanceDialogOpen, setBulkAdvanceDialogOpen] = useState(false);
 
   useEffect(() => {
     // Replace with actual logic for Supabase
@@ -223,6 +289,85 @@ export default function AdminDashboard() {
       console.error('Error updating status: ', error);
     }
   };
+
+  const handleApprovalChange = async (candidateId, approved) => {
+    try {
+      console.log('TODO: Update candidate approvalin Supabase backend');
+      setCandidates(prev => prev.map(candidate =>
+        candidate.id === candidateId
+          ? { ...candidate, approved }
+          : candidate
+      ));
+    } catch (error) {
+      console.error('Error updating candidate approval: ', error);
+    }
+  };
+
+  const handleBulkAdvanceRound = async () => {
+    try {
+      const currentRoundKey = stats.currentRound;
+      const currentRound = rounds.find(r => r.key === currentRoundKey);
+
+      if (!currentRound || !currentRound.next) {
+        alert('No next round available, or current round not set');
+        return;
+      }
+
+      const nextRound = rounds.find(r => r.key === currentRound.next);
+      const candidatesInCurrentRound = candidates.filter(c => c.currentRound === currentRoundKey);
+
+      const approved = candidatesInCurrentRound.filter(c => c.approved === true);
+      const rejected = candidatesInCurrentRound.filter(c => c.approved === false);
+      const pending = candidatesInCurrentRound.filter(c => c.approved === null);
+
+      if (pending.length > 0) {
+        alert(`Cannot advance round: ${pending.length} candidates still have pending approval status`);
+        return;
+      }
+
+      console.log('TODO: Implement bulk round advancement in Supabase backend');
+      console.log('Advancing to next round:', approved.map(c => c.name));
+      console.log('Rejecting candidates:', rejected.map(c => c.name));
+
+      setCandidates(prev => prev.map(candidate => {
+        if (approved.some(a => a.id === candidate.id)) {
+          return {
+            ...candidate,
+            currentRound: currentRound.next,
+            status: nextRound.name,
+            approved: null
+          };
+        } else if (rejected.some(r => r.id === candidate.id)) {
+          return {
+            ...candidate,
+            status: 'Rejected',
+            currentRound: 'rejected'
+          };
+        }
+        return candidate;
+      }));
+
+      setStats(prev => ({
+        ...prev,
+        currentRound: currentRound.next
+      }))
+
+      setBulkAdvanceDialogOpen(false);
+      alert(`Successfully advanced ${approved.length} candidates to ${nextRound.name} and rejected ${rejected.length} candidates`);
+    } catch (error) {
+      console.error('Error advancing round: ', error);
+    }
+  };
+
+  const filteredCandidates = candidates.filter(candidate => {
+    const statusMatch = statusFilter === 'all' || candidate.currentRound === statusFilter;
+    const approvalMatch = approvalFilter === 'all' ||
+      (approvalFilter === 'approved' && candidate.approved === true) ||
+      (approvalFilter === 'rejected' && candidate.approved === false) ||
+      (approvalFilter === 'pending' && candidate.approved === null);
+
+    return statusMatch && approvalMatch;
+  });
 
   const sidebarItems = [
     { key: 'dashboard', text: 'Dashboard', icon: <DashboardIcon /> },
@@ -291,8 +436,128 @@ export default function AdminDashboard() {
       case 'candidates':
         return (
           <Box>
-            <Typography variant="h4" gutterBottom>Candidates</Typography>
-            <Typography variant="body1">Candidate management interface to be implemented later.</Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+              <Typography variant="h4" gutterBottom>Candidate Management</Typography>
+              <Button
+                variant="contained"
+                startIcon={<SkipNextIcon />}
+                onClick={() => setBulkAdvanceDialogOpen(true)}
+                sx={{ bgcolor: 'success.main', '&:hover': { bgcolor: 'success.dark' } }}
+              >
+                Advance Round
+              </Button>
+            </Stack>
+
+            <Alert severity="info" sx={{ mb: 3 }}>
+              <Typography variant="h6">Current Recruitment Round</Typography>
+              <Typography variant="body1">
+                {rounds.find(r => r.key === stats.currentRound)?.name} - {candidates.filter(c => c.currentRound === stats.currentRound).length} active candidates
+              </Typography>
+            </Alert>
+
+            <Stack direction="row" spacing={2} mb={3}>
+              <FormControl size="small" sx={{ minWidth: 150 }}>
+                <InputLabel>Round Filter</InputLabel>
+                <Select
+                  value={statusFilter}
+                  label="Round Filter"
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <MenuItem value="all">All Rounds</MenuItem>
+                  {rounds.map(round => (
+                    <MenuItem key={round.key} value={round.key}>{round.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl size="small" sx={{ minWidth: 150 }}>
+                <InputLabel>Approval Filter</InputLabel>
+                <Select
+                  value={approvalFilter}
+                  label="Approval Filter"
+                  onChange={(e) => setApprovalFilter(e.target.value)}
+                >
+                  <MenuItem value="all">All Status</MenuItem>
+                  <MenuItem value="approved">Approved</MenuItem>
+                  <MenuItem value="rejected">Rejected</MenuItem>
+                  <MenuItem value="pending">Pending</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Current Round</TableCell>
+                    <TableCell>Score</TableCell>
+                    <TableCell>Approval Status</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredCandidates.map((candidate) => (
+                    <TableRow key={candidate.id}>
+                      <TableCell>{candidate.name}</TableCell>
+                      <TableCell>{candidate.email}</TableCell>
+                      <TableCell>
+                        <StatusIndicator status={candidate.status} />
+                      </TableCell>
+                      <TableCell>{candidate.score}</TableCell>
+                      <TableCell>
+                        <ApprovalIndicator
+                          approved={candidate.approved}
+                          onApprovalChange={(approved) => handleApprovalChange(candidate.id, approved)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton size="small">
+                          <EditIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Dialog open={bulkAdvanceDialogOpen} onClose={() => setBulkAdvanceDialogOpen(false)}>
+              <DialogTitle>Advance Round</DialogTitle>
+              <DialogContent>
+                <Typography variant="body1" gutterBottom>
+                  This will advance all approved candidates to the next round and reject all rejected candidates.
+                </Typography>
+                <Alert severity="warning" sx={{ mt: 2 }}>
+                  Current Round: {rounds.find(r => r.key === stats.currentRound)?.name}
+                  <br />
+                  Next Round: {rounds.find(r => r.key === rounds.find(r => r.key === stats.currentRound)?.next)?.name || 'None'}
+                </Alert>
+
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body2">
+                    Approved: {candidates.filter(c => c.currentRound === stats.currentRound && c.approved === true).length} candidates
+                  </Typography>
+                  <Typography variant="body2">
+                    Rejected: {candidates.filter(c => c.currentRound === stats.currentRound && c.approved === false).length} candidates
+                  </Typography>
+                  <Typography variant="body2">
+                    Pending: {candidates.filter(c => c.currentRound === stats.currentRound && c.approved === null).length} candidates
+                  </Typography>
+                </Box>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setBulkAdvanceDialogOpen(false)}>Cancel</Button>
+                <Button
+                  onClick={handleBulkAdvanceRound}
+                  variant="contained"
+                  color="success"
+                >
+                  Advance Round
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
         );
       case 'grading':
@@ -319,8 +584,14 @@ export default function AdminDashboard() {
       default:
         return (
           <Box>
-            <Typography variant="h4" gutterBottom>Dashboard</Typography>
-            <Typography variant="body1">Dashboard stats implemented later.</Typography>
+            <Typography variant="h4" gutterBottom>Dashboard Overview</Typography>
+
+            <Alert severity="info" sx={{ mt: 3, mb: 3 }}>
+              <Typography variant="h6">Current Recruitment Round</Typography>
+              <Typography variant="body1">
+                {rounds.find(r => r.key === stats.currentRound)?.name} - {candidates.filter(c => c.currentRound === stats.currentRound).length} active candidates
+              </Typography>
+            </Alert>
 
             <Box sx={{ mt: 4 }}>
               <Typography variant="h6" gutterBottom>Mock Data Preview</Typography>
@@ -346,6 +617,14 @@ export default function AdminDashboard() {
                     <CardContent>
                       <Typography variant="body2">Candidates</Typography>
                       <Typography variant="h5">{candidates.length}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={3}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2">Current Round</Typography>
+                      <Typography variant="h5">{rounds.find(r => r.key === stats.currentRound)?.name}</Typography>
                     </CardContent>
                   </Card>
                 </Grid>
