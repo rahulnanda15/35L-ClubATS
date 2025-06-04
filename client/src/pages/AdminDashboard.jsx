@@ -163,7 +163,7 @@ const PriorityIndicator = ({ priority }) => {
     'Medium': 'warning',
     'Low': 'success'
   };
-  
+
   return <Chip label={priority} color={colors[priority]} size="small" variant="outlined" />;
 };
 
@@ -216,17 +216,223 @@ export default function AdminDashboard() {
       // Local state update
       setCandidates(prev => prev.map(candidate =>
         candidate.id === candidateId
-        ? { ...candidate, status: newStatus }
-        : candidate
+          ? { ...candidate, status: newStatus }
+          : candidate
       ));
     } catch (error) {
       console.error('Error updating status: ', error);
     }
   };
 
+  const sidebarItems = [
+    { key: 'dashboard', text: 'Dashboard', icon: <DashboardIcon /> },
+    { key: 'candidates', text: 'Candidates', icon: <PeopleIcon /> },
+    { key: 'grading', text: 'Grading', icon: <AssignmentIcon /> },
+    { key: 'interviews', text: 'Interviews', icon: <EventIcon /> },
+    { key: 'settings', text: 'Settings', icon: <SettingsIcon /> }
+  ];
+
+  const drawer = (
+    <Box sx={{ height: '100%', bgcolor: '#1e293b', color: 'white' }}>
+      <Box sx={{ p: 3, borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <Typography variant="h6" sx={{ color: 'white', fontWeight: 700 }}>
+          Club Admin
+        </Typography>
+      </Box>
+      <List sx={{ pt: 2 }}>
+        {sidebarItems.map((item) => (
+          <ListItem
+            key={item.key}
+            button
+            onClick={() => setSelectedTab(item.key)}
+            sx={{
+              mx: 2,
+              mb: 1,
+              borderRadius: '8px',
+              bgcolor: selectedTab === item.key ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
+              color: selectedTab === item.key ? '#60a5fa' : 'rgba(255, 255, 255, 0.8)',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItem>
+        ))}
+      </List>
+
+      <Box sx={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
+        <Card sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', color: 'white' }}>
+          <CardContent sx={{ p: 2 }}>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                <AccountCircleIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="body2" sx={{ color: 'white', fontWeight: 600 }}>
+                  Ronit Anilkumar
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  Recruitment Lead
+                </Typography>
+              </Box>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Box>
+    </Box>
+  );
+
+  const renderContent = () => {
+    switch (selectedTab) {
+      case 'candidates':
+        return (
+          <Box>
+            <Typography variant="h4" gutterBottom>Candidates</Typography>
+            <Typography variant="body1">Candidate management interface to be implemented later.</Typography>
+          </Box>
+        );
+      case 'grading':
+        return (
+          <Box>
+            <Typography variant="h4" gutterBottom>Grading</Typography>
+            <Typography variant="body1">Grading interface to be implemented later.</Typography>
+          </Box>
+        );
+      case 'interviews':
+        return (
+          <Box>
+            <Typography variant="h4" gutterBottom>Interviews</Typography>
+            <Typography variant="body1">Interview management to be implemented later.</Typography>
+          </Box>
+        );
+      case 'settings':
+        return (
+          <Box>
+            <Typography variant="h4" gutterBottom>Settings</Typography>
+            <Typography variant="body1">Settings interface to be implemented later.</Typography>
+          </Box>
+        );
+      default:
+        return (
+          <Box>
+            <Typography variant="h4" gutterBottom>Dashboard</Typography>
+            <Typography variant="body1">Dashboard stats implemented later.</Typography>
+
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h6" gutterBottom>Mock Data Preview</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={4}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2">Total Applicants</Typography>
+                      <Typography variant="h5">{stats.totalApplicants}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={4}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2">Tasks</Typography>
+                      <Typography variant="h5">{tasks.length}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={4}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="body2">Candidates</Typography>
+                      <Typography variant="h5">{candidates.length}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
+        )
+    }
+  }
+
   return (
-    <Typography>Admin Dashboard</Typography>
-  )
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet"></link>
+
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        <AppBar
+          position="fixed"
+          sx={{
+            width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+            ml: { md: `${DRAWER_WIDTH}px` },
+            bgcolor: 'white',
+            color: 'text.primary',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            zIndex: 2222
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              edge="start"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              sx={{ mr: 2, display: { md: 'none' } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box sx={{ flexGrow: 1 }} />
+            <IconButton>
+              <Badge badgeContent={3} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+
+        <Box
+          component="nav"
+          sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}
+        >
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={() => setMobileOpen(false)}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+              display: { xs: 'block', md: 'none' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: DRAWER_WIDTH }
+            }}
+          >
+            {drawer}
+          </Drawer>
+
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', md: 'block' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: DRAWER_WIDTH }
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+            mt: '64px'
+          }}
+        >
+          {renderContent()}
+        </Box>
+      </Box>
+    </ThemeProvider>
+  );
 }
 
 /*import { useState } from "react";
