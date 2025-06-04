@@ -103,10 +103,10 @@ model Task {
 
 model Grade {
   id            String   @id @default(uuid())
-  resume        String
-  video         String
+  resume        String?
+  video         String?
   createdAt     DateTime @default(now())
-  cover_letter  String
+  cover_letter  String?
 
   applicant   String?
   user        String?
