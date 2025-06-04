@@ -12,6 +12,15 @@ export default function ApplicationDetail() {
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [resumeGrade, setResumeGrade] = useState(0); // Start at 0
+  const [videoGrade, setVideoGrade] = useState(0); // Start at 0
+  const [coverLetterGrade, setCoverLetterGrade] = useState(0); // Start at 0
+
+  const resetGrades = () => {
+    setResumeGrade(0);
+    setVideoGrade(0);
+    setCoverLetterGrade(0);
+  };
 
   useEffect(() => {
     const fetchApplication = async () => {
@@ -248,6 +257,85 @@ export default function ApplicationDetail() {
                 No photo available
               </div>
             )}
+          </div>
+          
+          {/* Grading Panel */}
+          <div className="grading-panel">
+            <h3 className="grading-title">Grade Application</h3>
+            <div className="grading-content">
+              <div className="grading-item">
+                <div className="grading-header">
+                  <label className="grading-label">Resume</label>
+                  <span className="grade-value">{resumeGrade}/10</span>
+                </div>
+                <div className="slider-container">
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={resumeGrade}
+                    onChange={(e) => setResumeGrade(parseInt(e.target.value))}
+                    className="grade-slider"
+                  />
+                  <div className="slider-ticks">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((tick) => (
+                      <span key={tick} className="tick"></span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="grading-item">
+                <div className="grading-header">
+                  <label className="grading-label">Video</label>
+                  <span className="grade-value">{videoGrade}/10</span>
+                </div>
+                <div className="slider-container">
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={videoGrade}
+                    onChange={(e) => setVideoGrade(parseInt(e.target.value))}
+                    className="grade-slider"
+                  />
+                  <div className="slider-ticks">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((tick) => (
+                      <span key={`video-${tick}`} className="tick"></span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="grading-item">
+                <div className="grading-header">
+                  <label className="grading-label">Cover Letter</label>
+                  <span className="grade-value">{coverLetterGrade}/10</span>
+                </div>
+                <div className="slider-container">
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={coverLetterGrade}
+                    onChange={(e) => setCoverLetterGrade(parseInt(e.target.value))}
+                    className="grade-slider"
+                  />
+                  <div className="slider-ticks">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((tick) => (
+                      <span key={`letter-${tick}`} className="tick"></span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="grading-actions">
+                <button className="grading-button save-button">Save Grades</button>
+                <button 
+                  className="grading-button reset-button"
+                  onClick={resetGrades}
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
