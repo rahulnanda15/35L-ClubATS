@@ -7,13 +7,63 @@ const router = express.Router();
 // All routes below require authentication
 router.use(requireAuth);
 
-// Get all applications 
+// Get all applications with average grades
 router.get('/', async (req, res) => {
   try {
+    // First, get all applications
     const applications = await prisma.application.findMany({
       orderBy: { submittedAt: 'desc' }
     });
-    res.json(applications);
+
+    // Get all grades
+    const allGrades = await prisma.grade.findMany();
+    
+    // Calculate average grades for each application
+    const applicationsWithAverages = await Promise.all(applications.map(async (application) => {
+      // Find grades for this application
+      const appGrades = allGrades.filter(grade => grade.applicant === application.id);
+      
+      // Filter out null grades and convert string grades to numbers
+      const resumeGrades = appGrades
+        .filter(g => g.resume !== null && g.resume !== undefined)
+        .map(g => parseFloat(g.resume));
+        
+      const videoGrades = appGrades
+        .filter(g => g.video !== null && g.video !== undefined)
+        .map(g => parseFloat(g.video));
+        
+      const coverLetterGrades = appGrades
+        .filter(g => g.cover_letter !== null && g.cover_letter !== undefined)
+        .map(g => parseFloat(g.cover_letter));
+      
+      // Calculate averages
+      const avgResume = resumeGrades.length > 0 ? 
+        (resumeGrades.reduce((a, b) => a + b, 0) / resumeGrades.length).toFixed(1) : null;
+        
+      const avgVideo = videoGrades.length > 0 ? 
+        (videoGrades.reduce((a, b) => a + b, 0) / videoGrades.length).toFixed(1) : null;
+        
+      const avgCoverLetter = coverLetterGrades.length > 0 ? 
+        (coverLetterGrades.reduce((a, b) => a + b, 0) / coverLetterGrades.length).toFixed(1) : null;
+      
+      // Calculate overall average if at least one grade exists
+      const allGradeValues = [...resumeGrades, ...videoGrades, ...coverLetterGrades];
+      const overallAverage = allGradeValues.length > 0 ? 
+        (allGradeValues.reduce((a, b) => a + b, 0) / allGradeValues.length).toFixed(1) : null;
+      
+      // Return application with average grades
+      return {
+        ...application,
+        averageGrades: {
+          resume: avgResume,
+          video: avgVideo,
+          cover_letter: avgCoverLetter,
+          overall: overallAverage
+        }
+      };
+    }));
+    
+    res.json(applicationsWithAverages);
   } catch (error) {
     console.error('Error fetching applications:', error);
     res.status(500).json({ error: 'Failed to fetch applications' });
