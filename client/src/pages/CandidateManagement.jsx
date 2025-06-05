@@ -823,7 +823,6 @@ export default function CandidateManagement() {
                         {rounds.map(round => (
                             <MenuItem key={round.key} value={round.key}>{round.name}</MenuItem>
                         ))}
-                        <MenuItem value="rejected">Rejected</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -879,14 +878,12 @@ export default function CandidateManagement() {
                                     </TableCell>
                                     <TableCell sx={{ opacity: isFinalized ? 0.8 : 1 }}>{candidate.gpa}</TableCell>
                                     <TableCell>
-                                        <TableCell>
-                                            <ApprovalIndicator
-                                                approved={candidate.approved}
-                                                onApprovalChange={(approved) => handleApprovalChange(candidate.id, approved)}
-                                                isDisabled={isFinalized}
-                                                isWaitlisted={candidate.currentRound === 'WAITLISTED'}
-                                            />
-                                        </TableCell>
+                                        <ApprovalIndicator
+                                            approved={candidate.approved}
+                                            onApprovalChange={(approved) => handleApprovalChange(candidate.id, approved)}
+                                            isDisabled={isFinalized}
+                                            isWaitlisted={candidate.currentRound === 'WAITLISTED'}
+                                        />
                                     </TableCell>
                                     <TableCell>
                                         <Stack direction="row" spacing={1}>

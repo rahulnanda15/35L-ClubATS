@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
-import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
 import ApplicationList from './pages/ApplicationList';
 import ApplicationDetail from './pages/ApplicationDetail';
 import Login from './pages/Login';
-import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
 import ApplicationCycleManager from './pages/ApplicationCycleManager';
 import NotFound from './pages/NotFound';
